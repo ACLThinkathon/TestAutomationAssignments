@@ -31,3 +31,7 @@ class AdminUsersPage(BasePage):
 
     def row_count(self) -> int:
         return self.count(self.TABLE_ROW)
+
+    def is_any_result_visible(self) -> bool:
+        """Return True if at least one user row is visible after a search."""
+        return self.row_count() > 0

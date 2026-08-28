@@ -4,11 +4,17 @@ These tests demonstrate the intended usage pattern for this framework:
 compose page objects (via fixtures), generate isolated test data, and
 assert on outcomes only, keeping test bodies short and readable.
 """
+import allure
 import pytest
 
 from utils.data_generator import generate_new_user_data
 
+pytestmark = allure.feature("Admin User Management")
 
+
+@allure.story("Add User")
+@allure.severity(allure.severity_level.BLOCKER)
+@allure.title("Adding a new system user succeeds and is searchable")
 @pytest.mark.smoke
 def test_add_new_user_successfully(admin_users_page, add_user_page):
     user_data = generate_new_user_data(user_role="ESS", status="Enabled")
@@ -34,6 +40,9 @@ def test_add_new_user_successfully(admin_users_page, add_user_page):
     )
 
 
+@allure.story("Add User")
+@allure.severity(allure.severity_level.CRITICAL)
+@allure.title("Adding a user with a duplicate username shows a validation error")
 @pytest.mark.regression
 @pytest.mark.negative
 def test_add_user_with_duplicate_username_shows_error(admin_users_page, add_user_page):

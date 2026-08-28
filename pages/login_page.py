@@ -7,6 +7,7 @@ class LoginPage(BasePage):
     PASSWORD_INPUT = "input[name='password']"
     LOGIN_BUTTON = "button[type='submit']"
     ERROR_ALERT = ".oxd-alert-content-text"
+    FIELD_ERROR = ".oxd-input-group__message"
 
     def navigate(self) -> "LoginPage":
         self.goto(Config.LOGIN_URL)
@@ -22,3 +23,6 @@ class LoginPage(BasePage):
 
     def has_error_message(self) -> bool:
         return self.is_visible(self.ERROR_ALERT, timeout=5000)
+
+    def has_required_field_errors(self) -> bool:
+        return self.is_visible(self.FIELD_ERROR, timeout=5000)

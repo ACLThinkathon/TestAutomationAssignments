@@ -9,7 +9,8 @@ and gets a small, consistent toolkit for interacting with the Playwright
 """
 from __future__ import annotations
 
-from playwright.sync_api import Page
+import allure
+from playwright.sync_api import Page, expect
 
 from config.config import Config
 
@@ -20,6 +21,7 @@ class BasePage:
         self.timeout = Config.DEFAULT_TIMEOUT_MS
 
     # --- navigation -----------------------------------------------------
+    @allure.step("Navigate to {url}")
     def goto(self, url: str) -> None:
         self.page.goto(url, wait_until="load")
 
@@ -27,19 +29,25 @@ class BasePage:
         return self.page.url
 
     # --- element interaction ---------------------------------------------
+    @allure.step("Click element: {selector}")
     def click(self, selector: str) -> None:
         self.page.locator(selector).first.click(timeout=self.timeout)
 
+    @allure.step("Fill '{text}' into element: {selector}")
     def fill(self, selector: str, text: str) -> None:
         locator = self.page.locator(selector).first
         locator.wait_for(state="visible", timeout=self.timeout)
         locator.fill(text, timeout=self.timeout)
 
+    @allure.step("Type '{text}' into element: {selector}")
     def type_text(self, selector: str, text: str, delay: int = 50) -> None:
         self.page.locator(selector).first.type(text, delay=delay, timeout=self.timeout)
 
     def get_text(self, selector: str) -> str:
         return self.page.locator(selector).first.inner_text(timeout=self.timeout)
+
+    def get_value(self, selector: str) -> str:
+        return self.page.locator(selector).first.input_value(timeout=self.timeout)
 
     def is_visible(self, selector: str, timeout: int | None = None) -> bool:
         try:
@@ -53,7 +61,23 @@ class BasePage:
     def count(self, selector: str) -> int:
         return self.page.locator(selector).count()
 
+    def wait_for_count(self, selector: str, expected_count: int, timeout: int | None = None) -> bool:
+        """Waits (with Playwright's built-in retry) for `selector` to settle
+        on `expected_count` matches, rather than reading the count once.
+
+        OrangeHRM's oxd tables briefly re-render (dropping to 0 rows, then
+        repopulating) after search/filter actions, so an instant `count()`
+        can race that in-between state -- this is the reliable way to
+        assert on a row count, especially 0 (no results).
+        """
+        try:
+            expect(self.page.locator(selector)).to_have_count(expected_count, timeout=timeout or self.timeout)
+            return True
+        except Exception:
+            return False
+
     # --- custom OrangeHRM (oxd) widgets ----------------------------------
+    @allure.step("Select '{option_text}' from dropdown: {dropdown_selector}")
     def select_oxd_dropdown_option(self, dropdown_selector: str, option_text: str) -> None:
         """Handles OrangeHRM's custom (non-native) `<select>` replacement.
 
@@ -66,6 +90,7 @@ class BasePage:
         option.wait_for(state="visible", timeout=self.timeout)
         option.click(timeout=self.timeout)
 
+    @allure.step("Pick autocomplete suggestion for '{search_term}' in: {input_selector}")
     def select_autocomplete_option(self, input_selector: str, search_term: str) -> str:
         """Types into an OrangeHRM autocomplete input and picks the first
         real suggestion. Returns the text of the option that was selected.
@@ -86,6 +111,7 @@ class BasePage:
         option.click(timeout=self.timeout)
         return selected_text
 
+    @allure.step("Wait for toast notification")
     def wait_for_toast(self, timeout: int | None = None) -> str:
         toast = self.page.locator(".oxd-toast")
         toast.first.wait_for(state="visible", timeout=timeout or self.timeout)

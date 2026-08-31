@@ -23,3 +23,5 @@ class Config:
     DASHBOARD_URL: str = f"{BASE_URL}/web/index.php/dashboard/index"
     ADD_USER_URL: str = f"{BASE_URL}/web/index.php/admin/saveSystemUser"
     SYSTEM_USERS_URL: str = f"{BASE_URL}/web/index.php/admin/viewSystemUsers"
+    ADD_EMPLOYEE_URL: str = f"{BASE_URL}/web/index.php/pim/addEmployee"
+    EMPLOYEE_LIST_URL: str = f"{BASE_URL}/web/index.php/pim/viewEmployeeList"

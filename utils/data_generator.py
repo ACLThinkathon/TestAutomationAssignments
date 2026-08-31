@@ -18,6 +18,16 @@ class NewUserData:
     employee_search_term: str
 
 
+@dataclass
+class NewEmployeeData:
+    first_name: str
+    last_name: str
+
+    @property
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
+
 def _random_suffix(length: int = 6) -> str:
     return "".join(fake.random_choices(elements=string.ascii_lowercase + string.digits, length=length))
 
@@ -52,3 +62,15 @@ def generate_new_user_data(
         status=status,
         employee_search_term=employee_search_term,
     )
+
+
+def generate_employee_data(prefix: str = "AutoEmp") -> NewEmployeeData:
+    """Builds a unique (first name, last name) pair for the PIM "Add
+    Employee" form, so the same employee record can be reliably re-found by
+    name in the Employee List afterwards.
+    """
+    return NewEmployeeData(first_name=prefix, last_name=_random_suffix())
+
+
+def generate_random_word(length: int = 8) -> str:
+    return _random_suffix(length)

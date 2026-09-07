@@ -18,6 +18,9 @@ from pages.add_user_page import AddUserPage
 from pages.pim_add_employee_page import PimAddEmployeePage
 from pages.employee_list_page import EmployeeListPage
 from pages.my_info_page import MyInfoPage
+from pages.leave_entitlement_page import LeaveEntitlementPage
+from pages.apply_leave_page import ApplyLeavePage
+from pages.my_leave_page import MyLeavePage
 
 
 @pytest.fixture
@@ -74,6 +77,21 @@ def employee_list_page(logged_in_page):
 @pytest.fixture
 def my_info_page(logged_in_page):
     return MyInfoPage(logged_in_page)
+
+
+@pytest.fixture
+def leave_entitlement_page(logged_in_page):
+    return LeaveEntitlementPage(logged_in_page)
+
+
+@pytest.fixture
+def apply_leave_page(logged_in_page):
+    return ApplyLeavePage(logged_in_page)
+
+
+@pytest.fixture
+def my_leave_page(logged_in_page):
+    return MyLeavePage(logged_in_page)
 
 
 def pytest_sessionstart(session):

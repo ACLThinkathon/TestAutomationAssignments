@@ -25,3 +25,6 @@ class Config:
     SYSTEM_USERS_URL: str = f"{BASE_URL}/web/index.php/admin/viewSystemUsers"
     ADD_EMPLOYEE_URL: str = f"{BASE_URL}/web/index.php/pim/addEmployee"
     EMPLOYEE_LIST_URL: str = f"{BASE_URL}/web/index.php/pim/viewEmployeeList"
+    ADD_LEAVE_ENTITLEMENT_URL: str = f"{BASE_URL}/web/index.php/leave/addLeaveEntitlement"
+    APPLY_LEAVE_URL: str = f"{BASE_URL}/web/index.php/leave/applyLeave"
+    MY_LEAVE_URL: str = f"{BASE_URL}/web/index.php/leave/viewMyLeaveList"

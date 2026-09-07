@@ -111,6 +111,24 @@ class BasePage:
         option.click(timeout=self.timeout)
         return selected_text
 
+    @allure.step("Set date '{date_value}' into date field: {selector}")
+    def fill_oxd_date(self, selector: str, date_value: str) -> None:
+        """Sets a value into one of OrangeHRM's custom masked date inputs.
+
+        A plain `.fill()` races the field's internal input-mask logic and can
+        end up appending to whatever value the field already had instead of
+        replacing it (seen firsthand on the Apply Leave "From/To Date"
+        fields), so the field is cleared via select-all+delete and the value
+        is typed character-by-character instead. Escape afterwards dismisses
+        the calendar popup so it doesn't intercept the next interaction.
+        """
+        field = self.page.locator(selector).first
+        field.click(timeout=self.timeout)
+        field.press("Control+A")
+        field.press("Delete")
+        field.type(date_value, delay=30)
+        self.page.keyboard.press("Escape")
+
     @allure.step("Wait for toast notification")
     def wait_for_toast(self, timeout: int | None = None) -> str:
         toast = self.page.locator(".oxd-toast")

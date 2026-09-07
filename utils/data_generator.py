@@ -1,8 +1,10 @@
 """Random test-data generation so tests never collide on unique fields
 (e.g. Username) and can be re-run repeatedly without manual cleanup.
 """
+import random
 import string
 from dataclasses import dataclass
+from datetime import date, timedelta
 
 from faker import Faker
 
@@ -74,3 +76,24 @@ def generate_employee_data(prefix: str = "AutoEmp") -> NewEmployeeData:
 
 def generate_random_word(length: int = 8) -> str:
     return _random_suffix(length)
+
+
+@dataclass
+class LeaveDates:
+    date_str: str  # "yyyy-dd-mm", matching OrangeHRM's Apply Leave date fields
+    leave_period: str  # e.g. "2026-01-01 - 2026-31-12", matching the Leave Period dropdown
+
+
+def generate_leave_dates(min_days_ahead: int = 1, max_days_ahead: int = 460) -> LeaveDates:
+    """Picks a random future date for an Apply Leave request.
+
+    Randomizing (rather than a fixed offset) lets the test be re-run
+    repeatedly without colliding with a leave request it already applied
+    for on an earlier run -- OrangeHRM rejects a duplicate application for
+    a date that already has one.
+    """
+    target = date.today() + timedelta(days=random.randint(min_days_ahead, max_days_ahead))
+    return LeaveDates(
+        date_str=target.strftime("%Y-%d-%m"),
+        leave_period=f"{target.year}-01-01 - {target.year}-31-12",
+    )

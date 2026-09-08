@@ -25,3 +25,40 @@ def test_add_new_employee_successfully(pim_add_employee_page, employee_list_page
     assert employee_list_page.is_employee_listed(employee_data.last_name), (
         f"Newly added employee '{employee_data.full_name}' was not found in the Employee List"
     )
+
+
+import allure
+import pytest
+
+from utils.data_generator import generate_employee_data
+
+pytestmark = allure.feature("PIM")
+
+
+@allure.story("Add Employee")
+@allure.severity(allure.severity_level.CRITICAL)
+@allure.title("Adding a new employee with a specific employee ID redirects to Personal Details with correct name")
+@pytest.mark.smoke
+def test_add_new_employee_with_employee_id_successfully(pim_add_employee_page, employee_list_page):
+    employee_data = generate_employee_data()
+
+    pim_add_employee_page.navigate()
+    pim_add_employee_page.add_employee(
+        employee_data.first_name,
+        employee_data.last_name,
+        employee_id=employee_data.employee_id,
+    )
+
+    assert pim_add_employee_page.is_saved(), (
+        "Expected to be redirected to the new employee's Personal Details page"
+    )
+    assert pim_add_employee_page.get_displayed_full_name() == employee_data.full_name, (
+        f"Expected Personal Details page to show employee name '{employee_data.full_name}'"
+    )
+
+    employee_list_page.navigate()
+    employee_list_page.search_by_employee_name(employee_data.full_name)
+
+    assert employee_list_page.is_employee_listed(employee_data.last_name), (
+        f"Newly added employee '{employee_data.full_name}' was not found in the Employee List"
+    )

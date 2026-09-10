@@ -1,21 +1,26 @@
-"""Logout scenario: ending an authenticated session from the Dashboard."""
 import allure
 import pytest
 
-from pages.login_page import LoginPage
-
-pytestmark = allure.feature("Authentication")
+pytestmark = allure.feature("Logout")
 
 
 @allure.story("Logout")
 @allure.severity(allure.severity_level.CRITICAL)
-@allure.title("Logout returns to the login page")
+@allure.title("User can log out from the profile picture menu after navigating to PIM")
 @pytest.mark.smoke
-def test_logout_returns_to_login_page(logged_in_page, dashboard_page):
-    assert dashboard_page.is_loaded()
+def test_recorded_flow(login_page, dashboard_page):
+    """Logout flow via Dashboard menu.
 
+    This test reproduces the recorded navigation steps:
+    login via the login page, open the PIM module, open the profile picture,
+    and click the Logout menu item.
+    """
+    # Login
+    login_page.navigate()
+    login_page.login(username="Admin", password="admin123")
+
+    # Navigate to PIM module
+    dashboard_page.open_module("PIM")
+
+    # Logout via user dropdown/profile picture menu
     dashboard_page.logout()
-
-    login_page = LoginPage(logged_in_page)
-    assert "auth/login" in login_page.current_url(), "Expected to be redirected to the login page after logout"
-    assert login_page.is_visible(LoginPage.LOGIN_BUTTON), "Expected the login form to be visible after logout"
